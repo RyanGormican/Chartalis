@@ -34,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+.vs/Charto/v16/.suo
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
