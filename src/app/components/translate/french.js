@@ -1,3 +1,4 @@
+// fr.js
 const fr = {
   Projects: "Projets",
   Settings: "Param\u00E8tres",
@@ -24,7 +25,19 @@ const fr = {
   component: "Composant",
   class: "Classe",
   component_name: "Nom du composant",
-  component_type: "Type de composant"
+  component_type: "Type de composant",
+  anonymous: "Anonyme",
+  feedback: "Retour",
+  signal_improvement: "Signaler une am\u00E9lioration",
+  leave_suggestion: "Laisser une suggestion",
+  name: "Nom",
+  name_optional: "Votre nom (optionnel)",
+  suggestion: "Suggestion",
+  suggestion_placeholder: "\u00C9crivez votre suggestion ici...",
+  submit: "Envoyer",
+  export_full_project: "Capturer Le Projet Complet",
+export_viewport: "Capturer La Vue",
+
 };
 
 export default fr;

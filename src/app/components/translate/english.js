@@ -1,3 +1,4 @@
+// en.js
 const en = {
   Projects: "Projects",
   Settings: "Settings",
@@ -24,7 +25,18 @@ const en = {
   component: "Component",
   class: "Class",
   component_name: "Component Name",
-  component_type: "Component Type"
-  };
+  component_type: "Component Type",
+  anonymous: "Anonymous",
+  feedback: "Feedback",
+  signal_improvement: "Signal Improvement",
+  leave_suggestion: "Leave a Suggestion",
+  name: "Name",
+  name_optional: "Your name (optional)",
+  suggestion: "Suggestion",
+  suggestion_placeholder: "Write your suggestion here...",
+  submit: "Submit",
+  export_full_project: "Capture Full Project",
+  export_viewport: "Capture View",
+};
 
-  export default en;
+export default en;
