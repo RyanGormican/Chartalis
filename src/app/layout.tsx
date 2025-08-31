@@ -1,10 +1,19 @@
-
 import "./globals.css";
+import { TranslateProvider } from "./components/translate/TranslateContext";
+
+export const metadata = {
+  title: "Chartalis",
+  description: "Dashboard App",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <TranslateProvider>
+          {children}
+        </TranslateProvider>
+      </body>
     </html>
   );
 }
