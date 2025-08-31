@@ -13,7 +13,10 @@ const en = {
   add_new_relationship: "Add New Relationship",
   linked_components: "Linked Components",
   component_details: "Component Details",
-  component_relationships: "Component Relationships"
+  component_relationships: "Component Relationships",
+  component_color: "Component Color",
+  delete_component: "Delete Component",
+  go_to_component: "Go to Component",
   };
 
   export default en;

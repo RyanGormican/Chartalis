@@ -5,10 +5,11 @@ import { Icon } from "@iconify/react";
 import SettingsModal from "./components/SettingsModal";
 import { useTranslate } from "./components/translate/TranslateContext";
 import Projects from "./components/project/Projects"; 
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Box } from "@mui/material";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [mode, setMode] = useState<"Projects">("Projects"); 
   const { translate } = useTranslate();
 
@@ -23,21 +24,44 @@ export default function Home() {
   return (
     <div className={styles.dashboard}>
       <aside className={styles.sidebar}>
-        <h2>Chartalis</h2>
-        <Stack direction="column" spacing={1}>
-          <Button
-            variant={mode === "Projects" ? "contained" : "outlined"}
-            onClick={() => setMode("Projects")}
-          >
-            {translate("Projects")}
-          </Button>
-          <Icon
-            icon="material-symbols:settings"
-            width="2rem"
-            height="2rem"
-            style={{ cursor: "pointer" }}
-            onClick={() => setModalOpen(true)}
-          />
+        <Stack direction="column" sx={{ height: "100%", justifyContent: "space-between", p: 2 }}>
+          <Box>
+            <h1 style={{ marginBottom: "1.5rem" }}>Chartalis</h1>
+            <Button
+              variant={mode === "Projects" ? "contained" : "outlined"}
+              onClick={() => setMode("Projects")}
+              fullWidth
+            >
+              {translate("Projects")}
+            </Button>
+          </Box>
+
+          <Stack direction="column" spacing={2} alignItems="center">
+            <Stack direction="row" spacing={3} sx={{ fontSize: "2.5rem" }}>
+              <a href="https://www.linkedin.com/in/ryangormican/">
+                <Icon icon="mdi:linkedin" color="#0e76a8" />
+              </a>
+              <a href="https://github.com/RyanGormican/Chartalis/">
+                <Icon icon="mdi:github" color="#e8eaea" />
+              </a>
+              <a href="https://ryangormicanportfoliohub.vercel.app/">
+                <Icon icon="teenyicons:computer-outline" color="#199c35" />
+              </a>
+            </Stack>
+
+            <Stack direction="row" spacing={2} justifyContent="space-between" width="100%" sx={{ fontSize: "2.5rem" }}>
+              <Icon
+                icon="material-symbols:settings"
+                style={{ cursor: "pointer" }}
+                onClick={() => setModalOpen(true)}
+              />
+              <Icon
+                icon="material-symbols:feedback"
+                style={{ cursor: "pointer" }}
+                onClick={() => setFeedbackOpen(true)}
+              />
+            </Stack>
+          </Stack>
         </Stack>
       </aside>
 
@@ -45,7 +69,7 @@ export default function Home() {
         {renderContent()}
       </main>
 
-      <SettingsModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <SettingsModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }

@@ -12,8 +12,11 @@ const fr = {
   select_component: "S\u00E9lectionner un Composant",
   add_new_relationship: "Ajouter une Nouvelle Relation",
   linked_components: "Composants Li\u00E9s",
-  component_details: "D\u00E9tails du composant",
-  component_relationships: "Relations du composant"
+  component_details: "D\u00E9tails du Composant",
+  component_relationships: "Relations du Composant",
+  component_color: "Couleur du Composant",
+  delete_component: "Supprimer le Composant",
+  go_to_component: "Aller au Composant"
 };
 
 export default fr;
