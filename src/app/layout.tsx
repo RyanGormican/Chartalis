@@ -2,7 +2,7 @@ import "./globals.css";
 import { TranslateProvider } from "./components/translate/TranslateContext";
 
 export const metadata = {
-  title: "Chartalis",
+  title: "Diagramo",
   description: "Dashboard App",
 };
 

@@ -90,28 +90,9 @@ export default function Projects() {
   return (
     <>
       <Grid container spacing={2} sx={{ mt: 2 }}>
-        {projects.map((project) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
-            <Card
-              sx={{ minHeight: 100, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-              onClick={() => {
-                setSelectedProjectId(project.id);
-                setMode("manage");
-              }}
-            >
-              <CardContent>
-                <Typography variant="h6" align="center">
-                  {project.name}
-                  <Typography>{project.owner}</Typography>
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-
-        <Grid item xs={12} sm={6} md={4} lg={3}>
+         <Grid item xs={12} sm={6} md={4} lg={3}>
           <Card
-            sx={{ minHeight: 100, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", borderStyle: "dashed" }}
+            sx={{ minHeight: 200, minWidth: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", borderStyle: "dashed" }}
             onClick={() => setDialogOpen(true)}
           >
             <CardContent>
@@ -122,6 +103,26 @@ export default function Projects() {
             </CardContent>
           </Card>
         </Grid>
+        {projects.map((project) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
+            <Card
+              sx={{ minHeight: 200, minWidth: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+              onClick={() => {
+                setSelectedProjectId(project.id);
+                setMode("manage");
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" align="center">
+                  {project.name}
+            
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+
+     
       </Grid>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>

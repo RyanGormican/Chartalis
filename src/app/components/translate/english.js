@@ -15,8 +15,16 @@ const en = {
   component_details: "Component Details",
   component_relationships: "Component Relationships",
   component_color: "Component Color",
+  component_attributes: "Component Attributes",
+  component_operations: "Component Operations",
   delete_component: "Delete Component",
   go_to_component: "Go to Component",
+  close: "Close",
+  download_data: "Download Data",
+  component: "Component",
+  class: "Class",
+  component_name: "Component Name",
+  component_type: "Component Type"
   };
 
   export default en;
