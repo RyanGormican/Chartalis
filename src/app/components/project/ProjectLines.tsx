@@ -1,13 +1,12 @@
 "use client";
 import { Project } from "./ProjectDrawer";
-import { ComponentItem } from "./types";
 
 type Props = {
   project: Project;
   positions: Record<string, { x: number; y: number }>;
 };
 
-function getNodeSize(comp: ComponentItem) {
+function getNodeSize(comp: any) {
   const lineHeight = 16;
   const sectionPadding = 8;
   const nameHeight = lineHeight + sectionPadding;
