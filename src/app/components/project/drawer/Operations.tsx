@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Stack, TextField, FormControl, Select, MenuItem, Button, IconButton } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Stack,
+  TextField,
+  FormControl,
+  Select,
+  MenuItem,
+  Button,
+  IconButton
+} from "@mui/material";
 import { Icon } from "@iconify/react";
-import { ComponentItem, Field } from "./types";
+import { ComponentItem, Field, Operation, OperationsProps } from "../types";
 
-type Props = {
-  component: ComponentItem;
-  updateComponent: (updates: Partial<ComponentItem>) => void;
-  translate: any;
-};
 
-export default function Operations({ component, updateComponent, translate }: Props) {
+export default function Operations({
+  component,
+  updateComponent,
+  translate
+}: OperationsProps) {
   const [newOpName, setNewOpName] = useState("");
   const [newOpType, setNewOpType] = useState<Field["type"]>("void");
 
@@ -23,7 +34,7 @@ export default function Operations({ component, updateComponent, translate }: Pr
 
   const removeOperation = (name: string) => {
     updateComponent({
-      operations: component.operations?.filter(op => op.name !== name) || [],
+      operations: component.operations?.filter((op: Operation) => op.name !== name) || [],
     });
   };
 
@@ -34,11 +45,16 @@ export default function Operations({ component, updateComponent, translate }: Pr
       </AccordionSummary>
       <AccordionDetails>
         <Stack spacing={1}>
-          {(component?.operations || []).map(op => (
-            <Stack key={op.name} direction="row" justifyContent="space-between" alignItems="center">
+          {(component.operations || []).map((op: Operation) => (
+            <Stack
+              key={op.name}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Typography>{`${op.name}(): ${op.type}`}</Typography>
               <IconButton size="small" onClick={() => removeOperation(op.name)}>
-                <Icon icon="tabler:trash" width="20" height="20" />
+                <Icon icon="tabler:trash" width={20} height={20} />
               </IconButton>
             </Stack>
           ))}
@@ -52,7 +68,10 @@ export default function Operations({ component, updateComponent, translate }: Pr
               onChange={(e) => setNewOpName(e.target.value)}
             />
             <FormControl size="small" sx={{ minWidth: 80 }}>
-              <Select value={newOpType} onChange={(e) => setNewOpType(e.target.value as Field["type"])}>
+              <Select
+                value={newOpType}
+                onChange={(e) => setNewOpType(e.target.value as Field["type"])}
+              >
                 <MenuItem value="string">string</MenuItem>
                 <MenuItem value="int">int</MenuItem>
                 <MenuItem value="float">float</MenuItem>
@@ -60,7 +79,9 @@ export default function Operations({ component, updateComponent, translate }: Pr
                 <MenuItem value="void">void</MenuItem>
               </Select>
             </FormControl>
-            <Button size="small" variant="outlined" onClick={addOperation}>{translate("add")}</Button>
+            <Button size="small" variant="outlined" onClick={addOperation}>
+              {translate("add")}
+            </Button>
           </Stack>
         </Stack>
       </AccordionDetails>

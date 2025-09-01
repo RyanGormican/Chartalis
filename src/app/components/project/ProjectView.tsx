@@ -5,23 +5,7 @@ import { useTranslate } from "../translate/TranslateContext";
 import ProjectDrawer from "./drawer/ProjectDrawer";
 import ProjectToolbar from "./ProjectToolbar";
 import ProjectCanvas, { ProjectCanvasHandle } from "./ProjectCanvas";
-
-export type ComponentItem = {
-  id: string;
-  name: string;
-  type?: string;
-  color: string;
-  attributes?: string[];
-  operations?: string[];
-  links?: any[];
-};
-
-export type Project = {
-  id: string;
-  name: string;
-  owner: string;
-  content?: Record<string, ComponentItem>;
-};
+import { Project, ProjectDrawerProps, ComponentItem, Field, Link, Operation } from "./types";
 
 type ProjectViewProps = {
   project: Project;

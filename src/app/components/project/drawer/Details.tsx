@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Accordion, AccordionSummary, AccordionDetails, Typography, TextField, Box, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Icon } from "@iconify/react";
-import { ComponentItem, Field } from "./types";
+import { Project, ProjectDrawerProps, ComponentItem, Field, Link, Operation } from "../types";
 
 type Props = {
   component: ComponentItem;

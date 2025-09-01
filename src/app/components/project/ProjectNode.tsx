@@ -1,20 +1,7 @@
 "use client";
 import { Box, Typography, Divider } from "@mui/material";
+import { ComponentItem, Attribute, Operation } from "./types";
 
-// Define types for attributes and operations
-export type Attribute = string | { name: string; type: string };
-export type Operation = string | { name: string; type?: string };
-
-// ComponentItem type
-export type ComponentItem = {
-  id: string;
-  name: string;
-  type?: string;
-  color?: string;
-  attributes?: string[];
-  operations?: string[];
-  links?: string[];
-};
 type Props = {
   comp: ComponentItem;
   position: { x: number; y: number };
@@ -51,7 +38,7 @@ export default function ProjectNode({ comp, position, openRenameMenu }: Props) {
       {/* Attributes Section */}
       <Box sx={{ p: 1 }}>
         {comp.attributes?.length ? (
-          comp.attributes.map((attr, idx) => (
+          comp.attributes.map((attr: Attribute, idx) => (
             <Typography key={idx} sx={{ fontSize: 13 }}>
               {typeof attr === "string" ? attr : `${attr.name}: ${attr.type}`}
             </Typography>
@@ -66,7 +53,7 @@ export default function ProjectNode({ comp, position, openRenameMenu }: Props) {
       {/* Operations Section */}
       <Box sx={{ p: 1 }}>
         {comp.operations?.length ? (
-          comp.operations.map((op, idx) => (
+          comp.operations.map((op: Operation, idx) => (
             <Typography key={idx} sx={{ fontSize: 13 }}>
               {typeof op === "string" ? op : `${op.name}(): ${op.type || "void"}`}
             </Typography>

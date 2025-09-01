@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { Project } from "../ProjectDrawer";
+import { Project } from "../types";
 
 export function usePanZoom(
   project: Project,

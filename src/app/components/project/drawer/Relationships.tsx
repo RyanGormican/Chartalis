@@ -16,7 +16,7 @@ import {
   FormControlLabel
 } from "@mui/material";
 import { Icon } from "@iconify/react";
-import { ComponentItem, Project } from "./types";
+import { ComponentItem, Project, Link } from "../types";
 
 type Props = {
   component: ComponentItem;
@@ -24,7 +24,7 @@ type Props = {
   selectedComponentKey: string;
   setProject: (project: Project) => void;
   updateLocalStorage: (project: Project) => void;
-  translate: any;
+  translate: (key: string) => string;
 };
 
 const relationTypes = ["Association", "Aggregation", "Composition"];
@@ -37,14 +37,14 @@ export default function ComponentRelationships({
   updateLocalStorage,
   translate
 }: Props) {
-  const [selectedRelation, setSelectedRelation] = useState("");
-  const [selectedRelationType, setSelectedRelationType] = useState(relationTypes[0]);
-  const [wholeEndAtSelected, setWholeEndAtSelected] = useState(true);
+  const [selectedRelation, setSelectedRelation] = useState<string>("");
+  const [selectedRelationType, setSelectedRelationType] = useState<string>(relationTypes[0]);
+  const [wholeEndAtSelected, setWholeEndAtSelected] = useState<boolean>(true);
 
-  const availableRelations = Object.entries(project.content!).filter(
-    ([k]) =>
+  const availableRelations = Object.entries(project.content || {}).filter(
+    ([k, comp]) =>
       k !== selectedComponentKey &&
-      !(component?.links || []).map(l => l.id).includes(k)
+      !((component.links || []).map((l) => l.id).includes(k))
   );
 
   const saveProject = (updatedContent: Project["content"]) => {
@@ -55,28 +55,28 @@ export default function ComponentRelationships({
 
   const addRelationship = () => {
     if (!selectedRelation) return;
-    const updatedContent = { ...project.content! };
+    const updatedContent = { ...project.content } as Record<string, ComponentItem>;
 
-    if (!updatedContent[selectedComponentKey].links) updatedContent[selectedComponentKey].links = [];
-    if (!updatedContent[selectedRelation].links) updatedContent[selectedRelation].links = [];
+    updatedContent[selectedComponentKey].links = updatedContent[selectedComponentKey].links || [];
+    updatedContent[selectedRelation].links = updatedContent[selectedRelation].links || [];
 
-    const linkData = {
+    const linkData: Link = {
       id: selectedRelation,
       type: selectedRelationType,
       wholeEnd: wholeEndAtSelected
     };
 
-    const reciprocalLinkData = {
+    const reciprocalLinkData: Link = {
       id: selectedComponentKey,
       type: selectedRelationType,
       wholeEnd: !wholeEndAtSelected
     };
 
-    if (!updatedContent[selectedComponentKey].links.some(l => l.id === selectedRelation)) {
+    if (!updatedContent[selectedComponentKey].links.some((l) => l.id === selectedRelation)) {
       updatedContent[selectedComponentKey].links.push(linkData);
     }
 
-    if (!updatedContent[selectedRelation].links.some(l => l.id === selectedComponentKey)) {
+    if (!updatedContent[selectedRelation].links.some((l) => l.id === selectedComponentKey)) {
       updatedContent[selectedRelation].links.push(reciprocalLinkData);
     }
 
@@ -88,30 +88,38 @@ export default function ComponentRelationships({
   };
 
   const removeRelationship = (linkId: string) => {
-    const updatedContent = { ...project.content! };
-    updatedContent[selectedComponentKey].links = updatedContent[selectedComponentKey].links?.filter(l => l.id !== linkId);
-    updatedContent[linkId].links = updatedContent[linkId].links?.filter(l => l.id !== selectedComponentKey);
+    const updatedContent = { ...project.content } as Record<string, ComponentItem>;
+
+    updatedContent[selectedComponentKey].links = updatedContent[selectedComponentKey].links?.filter(
+      (l) => l.id !== linkId
+    );
+
+    updatedContent[linkId].links = updatedContent[linkId].links?.filter(
+      (l) => l.id !== selectedComponentKey
+    );
+
     saveProject(updatedContent);
   };
 
   const updateRelationship = (linkId: string, updatedLink: { type: string; wholeEnd: boolean }) => {
-    const updatedContent = { ...project.content! };
+    const updatedContent = { ...project.content } as Record<string, ComponentItem>;
 
-    const linkIndex = updatedContent[selectedComponentKey].links.findIndex(l => l.id === linkId);
+    const links = updatedContent[selectedComponentKey].links || [];
+    const linkIndex = links.findIndex((l) => l.id === linkId);
     if (linkIndex !== -1) {
-      updatedContent[selectedComponentKey].links[linkIndex] = {
-        id: linkId,
-        ...updatedLink
-      };
+      links[linkIndex] = { id: linkId, ...updatedLink };
+      updatedContent[selectedComponentKey].links = links;
     }
 
-    const reciprocalIndex = updatedContent[linkId].links.findIndex(l => l.id === selectedComponentKey);
+    const reciprocalLinks = updatedContent[linkId].links || [];
+    const reciprocalIndex = reciprocalLinks.findIndex((l) => l.id === selectedComponentKey);
     if (reciprocalIndex !== -1) {
-      updatedContent[linkId].links[reciprocalIndex] = {
+      reciprocalLinks[reciprocalIndex] = {
         id: selectedComponentKey,
         type: updatedLink.type,
         wholeEnd: !updatedLink.wholeEnd
       };
+      updatedContent[linkId].links = reciprocalLinks;
     }
 
     saveProject(updatedContent);
@@ -145,8 +153,10 @@ export default function ComponentRelationships({
                 value={selectedRelationType}
                 onChange={(e) => setSelectedRelationType(e.target.value)}
               >
-                {relationTypes.map(type => (
-                  <MenuItem key={type} value={type}>{translate(type.toLowerCase())}</MenuItem>
+                {relationTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {translate(type.toLowerCase())}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -175,20 +185,20 @@ export default function ComponentRelationships({
         )}
 
         <Stack spacing={1}>
-          {(component?.links || []).map(({ id, type, wholeEnd }) => (
+          {(component.links || []).map(({ id, type, wholeEnd }) => (
             <Box
               key={id}
               sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography>{project.content![id]?.name}</Typography>
+                <Typography>{project.content?.[id]?.name}</Typography>
 
                 <FormControl sx={{ minWidth: 120 }}>
                   <Select
                     value={type}
                     onChange={(e) => updateRelationship(id, { type: e.target.value, wholeEnd })}
                   >
-                    {relationTypes.map(rt => (
+                    {relationTypes.map((rt) => (
                       <MenuItem key={rt} value={rt}>{translate(rt.toLowerCase())}</MenuItem>
                     ))}
                   </Select>
@@ -202,12 +212,13 @@ export default function ComponentRelationships({
                         onChange={(e) => updateRelationship(id, { type, wholeEnd: e.target.checked })}
                       />
                     }
+                    label=""
                   />
                 )}
               </Box>
 
               <IconButton size="small" onClick={() => removeRelationship(id)}>
-                <Icon icon="tabler:unlink" width="24" height="24" />
+                <Icon icon="tabler:unlink" width={24} height={24} />
               </IconButton>
             </Box>
           ))}

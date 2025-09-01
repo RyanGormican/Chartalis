@@ -1,11 +1,11 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useTranslate } from "../translate/TranslateContext";
 import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -14,24 +14,9 @@ import {
   Button,
   Stack,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import Grid from "@mui/material/Unstable_Grid2";
 import ProjectView from "./ProjectView";
-
-// Types
-export type ComponentItem = {
-  id: string;
-  name: string;
-  color: string;
-  attributes?: (string | { name: string; type: string })[];
-  operations?: (string | { name: string; type?: string })[];
-};
-
-export type Project = {
-  id: string;
-  name: string;
-  owner: string;
-  content?: Record<string, ComponentItem>;
-};
+import { Project } from "./types";
 
 export default function Projects() {
   const { translate } = useTranslate();
@@ -41,12 +26,11 @@ export default function Projects() {
   const [mode, setMode] = useState<"view" | "manage">("view");
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
-  // Load projects from localStorage
   useEffect(() => {
-    const diagramoData = localStorage.getItem("Diagramo");
-    if (diagramoData) {
+    const stored = localStorage.getItem("Diagramo");
+    if (stored) {
       try {
-        const parsed = JSON.parse(diagramoData) as { projects: Project[] };
+        const parsed = JSON.parse(stored) as { projects: Project[] };
         setProjects(parsed.projects || []);
       } catch {
         setProjects([]);
@@ -55,11 +39,12 @@ export default function Projects() {
   }, []);
 
   const updateLocalStorage = (updatedProject: Project) => {
-    const diagramoData = localStorage.getItem("Diagramo");
+    const stored = localStorage.getItem("Diagramo");
     let parsed: { projects: Project[] } = { projects: [] };
-    if (diagramoData) {
+
+    if (stored) {
       try {
-        parsed = JSON.parse(diagramoData) as { projects: Project[] };
+        parsed = JSON.parse(stored) as { projects: Project[] };
         if (!parsed.projects) parsed.projects = [];
       } catch {
         parsed.projects = [];
@@ -79,17 +64,18 @@ export default function Projects() {
 
   const saveNewProject = () => {
     if (!newProjectName.trim()) return;
+
     const newProject: Project = {
       id: crypto.randomUUID(),
       name: newProjectName.trim(),
       owner: "current_user",
     };
+
     updateLocalStorage(newProject);
     setNewProjectName("");
     setDialogOpen(false);
   };
 
-  // Manage mode: open selected project
   if (mode === "manage" && selectedProjectId) {
     const project = projects.find((p) => p.id === selectedProjectId);
     if (!project) {
@@ -105,8 +91,6 @@ export default function Projects() {
       );
     }
   }
-
-  const contentEmpty = projects.length === 0;
 
   return (
     <>
@@ -125,13 +109,7 @@ export default function Projects() {
             onClick={() => setDialogOpen(true)}
           >
             <CardContent>
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Icon icon="mdi:folder-add" width={24} height={24} />
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                 <Typography variant="h6">{translate("new_project")}</Typography>
               </Stack>
             </CardContent>
@@ -176,9 +154,7 @@ export default function Projects() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>
-            {translate("cancel")}
-          </Button>
+          <Button onClick={() => setDialogOpen(false)}>{translate("cancel")}</Button>
           <Button onClick={saveNewProject} variant="contained">
             {translate("confirm")}
           </Button>

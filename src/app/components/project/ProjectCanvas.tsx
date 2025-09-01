@@ -8,31 +8,18 @@ import React, {
 } from "react";
 import { Box, Button } from "@mui/material";
 import ProjectNode from "./ProjectNode";
-import ProjectLines, { Component } from "./ProjectLines";
-import { Project, ComponentItem } from "./ProjectDrawer";
+import ProjectLines from "./ProjectLines";
+import { Project, ComponentItem, Link, CanvasProps } from "./types";
 import { useLayout } from "./hooks/useLayout";
 
-// Types
+
 export interface ProjectCanvasHandle {
   canvasRef: HTMLDivElement | null;
   worldSize: { width: number; height: number };
 }
 
-export type Link = {
-  id: string;
-  type: "Association" | "Aggregation" | "Composition" | string;
-  wholeEnd?: boolean;
-};
 
-type Props = {
-  project: Project & { content?: Record<string, ComponentItem & Component> };
-  selectedComponentKey: string | null;
-  setSelectedComponentKey: (key: string | null) => void;
-  addNewComponent: (linkTo?: string) => void;
-  openRenameMenu: (key: string) => void;
-};
-
-const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
+const ProjectCanvas = forwardRef<ProjectCanvasHandle, CanvasProps>(
   (
     { project, selectedComponentKey, setSelectedComponentKey, addNewComponent, openRenameMenu },
     ref
@@ -105,7 +92,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       setScale(newScale);
     };
 
-    const safeContent: Record<string, ComponentItem & Component> = {};
+    const safeContent: Record<string, ComponentItem> = {};
 
     if (project.content) {
       // Ensure every component has a string color

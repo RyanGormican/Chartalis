@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Project, ComponentItem } from "../ProjectDrawer";
+import { Project, ComponentItem } from "../types";
 
 const REPULSION_SCALE = 6;
 const ATTRACTION_SCALE = 0.1;
