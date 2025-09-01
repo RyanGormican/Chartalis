@@ -1,18 +1,37 @@
 "use client";
-import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useEffect,
+} from "react";
 import { Box, Button } from "@mui/material";
 import ProjectNode from "./ProjectNode";
 import ProjectLines from "./ProjectLines";
 import { Project } from "./ProjectDrawer";
 import { useLayout } from "./hooks/useLayout";
 
+// Types
 export interface ProjectCanvasHandle {
   canvasRef: HTMLDivElement | null;
   worldSize: { width: number; height: number };
 }
 
+export type Link = {
+  id: string;
+  type: "Association" | "Aggregation" | "Composition" | string;
+  wholeEnd?: boolean;
+};
+
+export type Component = {
+  attributes?: string[];
+  operations?: string[];
+  links?: Link[];
+};
+
 type Props = {
-  project: Project;
+  project: Project & { content: Record<string, Component> };
   selectedComponentKey: string | null;
   setSelectedComponentKey: (key: string | null) => void;
   addNewComponent: (linkTo?: string) => void;
@@ -20,7 +39,10 @@ type Props = {
 };
 
 const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
-  ({ project, selectedComponentKey, setSelectedComponentKey, addNewComponent, openRenameMenu }, ref) => {
+  (
+    { project, selectedComponentKey, setSelectedComponentKey, addNewComponent, openRenameMenu },
+    ref
+  ) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const canvasRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +57,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
     // Expose canvasRef and worldSize to parent
     useImperativeHandle(ref, () => ({
       canvasRef: canvasRef.current,
-      worldSize
+      worldSize,
     }));
 
     // Center selected component in viewport
@@ -45,10 +67,11 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       const containerRect = containerRef.current.getBoundingClientRect();
       setOffset({
         x: containerRect.width / 2 - box.x * scale - 60,
-        y: containerRect.height / 2 - box.y * scale - 20
+        y: containerRect.height / 2 - box.y * scale - 20,
       });
     }, [selectedComponentKey, positions, scale]);
 
+    // Panning handlers
     const onPointerDown = (e: React.PointerEvent) => {
       if (e.button !== 0) return;
       isPanningRef.current = true;
@@ -60,7 +83,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       if (!isPanningRef.current || !lastPointerRef.current) return;
       const dx = e.clientX - lastPointerRef.current.x;
       const dy = e.clientY - lastPointerRef.current.y;
-      setOffset(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       lastPointerRef.current = { x: e.clientX, y: e.clientY };
     };
 
@@ -70,6 +93,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       if (e) (e.target as Element).releasePointerCapture?.(e.pointerId);
     };
 
+    // Zoom handler
     const onWheel = (e: React.WheelEvent) => {
       e.preventDefault();
       if (!containerRef.current) return;
@@ -82,7 +106,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       const newScale = Math.max(0.2, Math.min(5, scale * zoomFactor));
       setOffset({
         x: pointerX - worldX * newScale,
-        y: pointerY - worldY * newScale
+        y: pointerY - worldY * newScale,
       });
       setScale(newScale);
     };
@@ -106,7 +130,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
           position: "relative",
           overflow: "hidden",
           touchAction: "none",
-          cursor: isPanningRef.current ? "grabbing" : "grab"
+          cursor: isPanningRef.current ? "grabbing" : "grab",
         }}
       >
         <Box
@@ -119,10 +143,14 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
             height: `${worldSize.height}px`,
             transform: `translate(${offset.x}px,${offset.y}px) scale(${scale})`,
             transformOrigin: "0 0",
-            willChange: "transform"
+            willChange: "transform",
           }}
         >
-          <svg width={worldSize.width} height={worldSize.height} style={{ position: "absolute", left: 0, top: 0 }}>
+          <svg
+            width={worldSize.width}
+            height={worldSize.height}
+            style={{ position: "absolute", left: 0, top: 0 }}
+          >
             <ProjectLines project={project} positions={positions} />
           </svg>
 
@@ -130,7 +158,11 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
             <Button
               variant="outlined"
               onClick={() => addNewComponent()}
-              sx={{ position: "absolute", left: worldSize.width / 2 - 60, top: worldSize.height / 2 - 20 }}
+              sx={{
+                position: "absolute",
+                left: worldSize.width / 2 - 60,
+                top: worldSize.height / 2 - 20,
+              }}
             >
               New Component
             </Button>
