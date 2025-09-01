@@ -1,13 +1,13 @@
 "use client";
 import { Project } from "./ProjectDrawer";
 
-type Link = {
+export type Link = {
   id: string;
   type: "Association" | "Aggregation" | "Composition" | string;
   wholeEnd?: boolean;
 };
 
-type Component = {
+export type Component = {
   attributes?: string[];
   operations?: string[];
   links?: Link[];
@@ -29,7 +29,6 @@ function getNodeSize(comp: Component) {
   return { width, height };
 }
 
-// Compute the point where the line exits the box
 function getEdgePoint(
   boxX: number,
   boxY: number,
@@ -59,7 +58,10 @@ export default function ProjectLines({ project, positions }: Props) {
   const elements: JSX.Element[] = [];
 
   Object.entries(project.content || {}).forEach(([key, comp]) => {
-    comp.links?.forEach((link) => {
+    // Ensure comp is treated as Component
+    const component = comp as Component;
+
+    component.links?.forEach((link) => {
       const linkedId = link.id;
       const type = link.type;
       const wholeEnd = link.wholeEnd;
@@ -68,14 +70,14 @@ export default function ProjectLines({ project, positions }: Props) {
 
       const fromPos = positions[key];
       const toPos = positions[linkedId];
-      const { width: fromW, height: fromH } = getNodeSize(comp);
-      const { width: toW, height: toH } = getNodeSize(project.content[linkedId]);
+      const { width: fromW, height: fromH } = getNodeSize(component);
+      const toComp = project.content[linkedId] as Component;
+      const { width: toW, height: toH } = getNodeSize(toComp);
 
-      // Compute exit points from boxes
       const fromEdge = getEdgePoint(fromPos.x, fromPos.y, fromW, fromH, toPos.x + toW / 2, toPos.y + toH / 2);
       const toEdge = getEdgePoint(toPos.x, toPos.y, toW, toH, fromPos.x + fromW / 2, fromPos.y + fromH / 2);
 
-      // Draw connecting line
+      // Draw line
       elements.push(
         <line
           key={`line-${key}-${linkedId}`}
@@ -88,7 +90,7 @@ export default function ProjectLines({ project, positions }: Props) {
         />
       );
 
-      // Draw diamond for Aggregation/Composition
+      // Draw diamond
       if (type === "Aggregation" || type === "Composition") {
         const dx = toEdge.x - fromEdge.x;
         const dy = toEdge.y - fromEdge.y;
