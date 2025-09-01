@@ -172,11 +172,11 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
           ) : (
             Object.entries(safeContent).map(([key, comp]) => (
               <ProjectNode
-                key={key}
-                comp={comp}
-                position={positions[key] || { x: 0, y: 0 }}
-                openRenameMenu={openRenameMenu}
-              />
+    key={key}
+    comp={{ ...comp, color: comp.color || "#ffffff" }} 
+    position={positions[key] || { x: 0, y: 0 }}
+    openRenameMenu={openRenameMenu}
+  />
             ))
           )}
         </Box>
