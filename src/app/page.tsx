@@ -34,7 +34,7 @@ export default function Home() {
               onClick={() => setMode("Projects")}
               fullWidth
             >
-              {translate("projects")}
+              {translate("projects" as any)}
             </Button>
           </Box>
 

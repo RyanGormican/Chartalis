@@ -5,33 +5,11 @@ import { Icon } from "@iconify/react";
 import * as htmlToImage from "html-to-image";
 import { useTranslate } from "../translate/TranslateContext";
 import { ProjectCanvasHandle } from "./ProjectCanvas";
+import { Project, ComponentItem, ToolbarProps } from "./types";
 
-export type ComponentItem = {
-  id: string;
-  name: string;
-  type?: string;
-  color: string;
-  attributes?: string[];
-  operations?: string[];
-  links?: any[];
-};
 
-export type Project = {
-  id: string;
-  name: string;
-  owner: string;
-  content?: Record<string, ComponentItem>;
-};
 
-type Props = {
-  project: Project;
-  goBack: () => void;
-  selectedComponentKey: string | null;
-  setSelectedComponentKey: (key: string | null) => void;
-  addNewComponent: () => void;
-  canvasRef: React.RefObject<ProjectCanvasHandle>; 
-  worldSize: { width: number; height: number };
-};
+
 
 export default function ProjectToolbar({
   project,
@@ -41,7 +19,7 @@ export default function ProjectToolbar({
   addNewComponent,
   canvasRef,
   worldSize
-}: Props) {
+}: ToolbarProps) {
   const { translate } = useTranslate();
 
   const downloadPng = (dataUrl: string) => {

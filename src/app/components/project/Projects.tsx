@@ -13,8 +13,8 @@ import {
   TextField,
   Button,
   Stack,
+  Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
 import ProjectView from "./ProjectView";
 import { Project } from "./types";
 
@@ -69,6 +69,7 @@ export default function Projects() {
       id: crypto.randomUUID(),
       name: newProjectName.trim(),
       owner: "current_user",
+      content: {},
     };
 
     updateLocalStorage(newProject);
@@ -94,8 +95,8 @@ export default function Projects() {
 
   return (
     <>
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Grid container spacing={2} mt={2}>
+        <Grid>
           <Card
             sx={{
               minHeight: 200,
@@ -117,7 +118,7 @@ export default function Projects() {
         </Grid>
 
         {projects.map((project) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
+          <Grid key={project.id} >
             <Card
               sx={{
                 minHeight: 200,

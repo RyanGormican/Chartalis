@@ -71,3 +71,18 @@ export type LineProps = {
     { x: number; y: number }
   >;
 };
+
+export type ToolbarProps = {
+  project: Project;
+  goBack: () => void;
+  selectedComponentKey: string | null;
+  setSelectedComponentKey: (key: string | null) => void;
+  addNewComponent: () => void;
+  canvasRef: React.RefObject<ProjectCanvasHandle>; 
+  worldSize: { width: number; height: number };
+};
+
+export interface ProjectCanvasHandle {
+  canvasRef: HTMLDivElement | null;
+  worldSize: { width: number; height: number };
+}
