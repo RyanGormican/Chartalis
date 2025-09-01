@@ -40,7 +40,7 @@ export default function ProjectLines({ project, positions }: Props) {
   const elements: JSX.Element[] = [];
 
   Object.entries(project.content || {}).forEach(([key, comp]) => {
-    (comp.links || []).forEach(link => {
+    (comp.links || []).forEach(link: any => {
       const linkedId = link.id;
       const type = link.type;
       const wholeEnd = link.wholeEnd;
