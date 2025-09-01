@@ -8,7 +8,7 @@ type Translations = typeof en;
 type TranslationContextType = {
   language: string;
   setLanguage: (lang: string) => void;
-  t: (key: keyof Translations) => string;
+  translate: (key: keyof Translations) => string;
   availableLanguages: string[];
 };
 
