@@ -23,7 +23,7 @@ type ProjectDrawerProps = {
   onClose: () => void;
   project: Project;
   selectedComponentKey: string | null;
-  setProject: (project: Project) => void;
+    setProject: React.Dispatch<React.SetStateAction<Project>>;
   addNewComponent: (linkTo?: string) => void;
   updateLocalStorage: (project: Project) => void;
 };
