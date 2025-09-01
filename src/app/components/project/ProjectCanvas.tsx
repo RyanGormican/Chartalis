@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { Box, Button } from "@mui/material";
 import ProjectNode from "./ProjectNode";
-import ProjectLines from "./ProjectLines";
+import ProjectLines, { Component } from "./ProjectLines";
 import { Project } from "./ProjectDrawer";
 import { useLayout } from "./hooks/useLayout";
 
@@ -24,14 +24,8 @@ export type Link = {
   wholeEnd?: boolean;
 };
 
-export type Component = {
-  attributes?: string[];
-  operations?: string[];
-  links?: Link[];
-};
-
 type Props = {
-  project: Project & { content: Record<string, Component> };
+  project: Project & { content?: Record<string, Component> };
   selectedComponentKey: string | null;
   setSelectedComponentKey: (key: string | null) => void;
   addNewComponent: (linkTo?: string) => void;
@@ -113,6 +107,9 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
 
     const contentEmpty = !project.content || Object.keys(project.content).length === 0;
 
+    // Ensure project.content is always a Record<string, Component> for ProjectLines
+    const safeContent = project.content || {};
+
     return (
       <Box
         ref={containerRef}
@@ -151,7 +148,10 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
             height={worldSize.height}
             style={{ position: "absolute", left: 0, top: 0 }}
           >
-            <ProjectLines project={project} positions={positions} />
+            <ProjectLines
+              project={{ ...project, content: safeContent }}
+              positions={positions}
+            />
           </svg>
 
           {contentEmpty ? (
@@ -167,7 +167,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
               New Component
             </Button>
           ) : (
-            Object.entries(project.content!).map(([key, comp]) => (
+            Object.entries(safeContent).map(([key, comp]) => (
               <ProjectNode
                 key={key}
                 comp={comp}
