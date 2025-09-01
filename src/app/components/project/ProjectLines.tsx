@@ -7,10 +7,14 @@ export type Link = {
   wholeEnd?: boolean;
 };
 
-export type Component = {
+export type ComponentItem = {
+  id: string;
+  name: string;
+  type?: string;
+  color?: string;
   attributes?: string[];
   operations?: string[];
-  links?: Link[];
+  links?: string[];
 };
 
 type Props = {

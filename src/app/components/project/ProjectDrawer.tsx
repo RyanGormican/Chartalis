@@ -7,7 +7,10 @@ import { useTranslate } from "../translate/TranslateContext";
 export type ComponentItem = {
   id: string;
   name: string;
+  type?: string;
   color?: string;
+  attributes?: string[];
+  operations?: string[];
   links?: string[];
 };
 

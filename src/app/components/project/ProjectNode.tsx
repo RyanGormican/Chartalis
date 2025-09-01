@@ -9,11 +9,12 @@ export type Operation = string | { name: string; type?: string };
 export type ComponentItem = {
   id: string;
   name: string;
-  color: string;
-  attributes?: Attribute[];
-  operations?: Operation[];
+  type?: string;
+  color?: string;
+  attributes?: string[];
+  operations?: string[];
+  links?: string[];
 };
-
 type Props = {
   comp: ComponentItem;
   position: { x: number; y: number };
