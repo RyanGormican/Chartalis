@@ -33,21 +33,21 @@ export default function Projects() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   useEffect(() => {
-    const chartalisData = localStorage.getItem("Chartalis");
-    if (chartalisData) {
+    const diagramoData = localStorage.getItem("Diagramo");
+    if (diagramoData) {
       try {
-        const parsed = JSON.parse(chartalisData);
+        const parsed = JSON.parse(diagramoData);
         setProjects(parsed.projects || []);
       } catch {}
     }
   }, []);
 
   const updateLocalStorage = (updatedProject: Project) => {
-    const chartalisData = localStorage.getItem("Chartalis");
+    const diagramoData = localStorage.getItem("Diagramo");
     let parsed = { projects: [] as Project[] };
-    if (chartalisData) {
+    if (diagramoData) {
       try {
-        parsed = JSON.parse(chartalisData);
+        parsed = JSON.parse(diagramoData);
         if (!parsed.projects) parsed.projects = [];
       } catch {
         parsed.projects = [];
@@ -61,7 +61,7 @@ export default function Projects() {
       parsed.projects.push(updatedProject);
     }
 
-    localStorage.setItem("Chartalis", JSON.stringify(parsed));
+    localStorage.setItem("Diagramo", JSON.stringify(parsed));
     setProjects(parsed.projects);
   };
 

@@ -26,14 +26,14 @@ export default function SettingsModal({ open, onClose }: SettingsModalProps) {
     }) || "English";
 
   const download_data = () => {
-    const data = localStorage.getItem("Chartalis");
+    const data = localStorage.getItem("Diagramo");
     if (!data) return;
 
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "Chartalis.json";
+    link.download = "Diagramo.json";
     link.click();
     URL.revokeObjectURL(url);
   };
