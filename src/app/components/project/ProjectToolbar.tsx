@@ -4,9 +4,18 @@ import { Stack, Button, Typography, IconButton, Select, MenuItem } from "@mui/ma
 import { Icon } from "@iconify/react";
 import * as htmlToImage from "html-to-image";
 import { useTranslate } from "../translate/TranslateContext";
-import { ProjectCanvasHandle, ComponentItem } from "./ProjectCanvas";
+import { ProjectCanvasHandle } from "./ProjectCanvas";
 
-// Extend Project type to include typed content
+export type ComponentItem = {
+  id: string;
+  name: string;
+  type?: string;
+  color: string;
+  attributes?: string[];
+  operations?: string[];
+  links?: any[];
+};
+
 export type Project = {
   id: string;
   name: string;
@@ -45,19 +54,13 @@ export default function ProjectToolbar({
   const exportFullProject = async () => {
     const node = canvasRef.current?.canvasRef;
     if (!node) return;
-
     const prevTransform = node.style.transform;
     node.style.transform = `translate(0,0) scale(1)`;
-
     try {
       const dataUrl = await htmlToImage.toPng(node, {
         width: worldSize.width,
         height: worldSize.height,
-        style: {
-          width: `${worldSize.width}px`,
-          height: `${worldSize.height}px`,
-          transformOrigin: "0 0"
-        }
+        style: { width: `${worldSize.width}px`, height: `${worldSize.height}px`, transformOrigin: "0 0" }
       });
       downloadPng(dataUrl);
     } finally {
@@ -68,7 +71,6 @@ export default function ProjectToolbar({
   const exportViewport = async () => {
     const node = canvasRef.current?.canvasRef;
     if (!node) return;
-
     try {
       const dataUrl = await htmlToImage.toPng(node);
       downloadPng(dataUrl);
