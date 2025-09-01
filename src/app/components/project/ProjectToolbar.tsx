@@ -4,8 +4,7 @@ import { Stack, Button, Typography, IconButton, Select, MenuItem } from "@mui/ma
 import { Icon } from "@iconify/react";
 import * as htmlToImage from "html-to-image";
 import { useTranslate } from "../translate/TranslateContext";
-import { ProjectCanvasHandle } from "./ProjectCanvas";
-import { Project, ComponentItem, ToolbarProps } from "./types";
+import { Project, ComponentItem, ToolbarProps, ProjectCanvasHandle } from "./types";
 
 
 

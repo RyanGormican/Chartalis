@@ -9,14 +9,9 @@ import React, {
 import { Box, Button } from "@mui/material";
 import ProjectNode from "./ProjectNode";
 import ProjectLines from "./ProjectLines";
-import { Project, ComponentItem, Link, CanvasProps } from "./types";
+import { Project, ComponentItem, Link, CanvasProps, ProjectCanvasHandle } from "./types";
 import { useLayout } from "./hooks/useLayout";
 
-
-export interface ProjectCanvasHandle {
-  canvasRef: HTMLDivElement | null;
-  worldSize: { width: number; height: number };
-}
 
 
 const ProjectCanvas = forwardRef<ProjectCanvasHandle, CanvasProps>(

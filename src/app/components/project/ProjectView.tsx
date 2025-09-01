@@ -4,8 +4,8 @@ import { Box } from "@mui/material";
 import { useTranslate } from "../translate/TranslateContext";
 import ProjectDrawer from "./drawer/ProjectDrawer";
 import ProjectToolbar from "./ProjectToolbar";
-import ProjectCanvas, { ProjectCanvasHandle } from "./ProjectCanvas";
-import { Project, ProjectDrawerProps, ComponentItem, Field, Link, Operation } from "./types";
+import ProjectCanvas from "./ProjectCanvas";
+import { Project, ProjectDrawerProps, ComponentItem, Field, Link, Operation, ProjectCanvasHandle } from "./types";
 
 type ProjectViewProps = {
   project: Project;
