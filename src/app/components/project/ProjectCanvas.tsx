@@ -9,7 +9,7 @@ import React, {
 import { Box, Button } from "@mui/material";
 import ProjectNode from "./ProjectNode";
 import ProjectLines, { Component } from "./ProjectLines";
-import { Project } from "./ProjectDrawer";
+import { Project, ComponentItem } from "./ProjectDrawer";
 import { useLayout } from "./hooks/useLayout";
 
 // Types
@@ -25,7 +25,7 @@ export type Link = {
 };
 
 type Props = {
-  project: Project & { content?: Record<string, Component> };
+  project: Project & { content?: Record<string, ComponentItem & Component> };
   selectedComponentKey: string | null;
   setSelectedComponentKey: (key: string | null) => void;
   addNewComponent: (linkTo?: string) => void;
@@ -105,10 +105,16 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
       setScale(newScale);
     };
 
-    const contentEmpty = !project.content || Object.keys(project.content).length === 0;
+    const safeContent: Record<string, ComponentItem & Component> = {};
 
-    // Ensure project.content is always a Record<string, Component> for ProjectLines
-    const safeContent = project.content || {};
+    if (project.content) {
+      // Ensure every component has a string color
+      Object.entries(project.content).forEach(([key, comp]) => {
+        safeContent[key] = { color: "#ffffff", ...comp };
+      });
+    }
+
+    const contentEmpty = Object.keys(safeContent).length === 0;
 
     return (
       <Box
@@ -148,10 +154,7 @@ const ProjectCanvas = forwardRef<ProjectCanvasHandle, Props>(
             height={worldSize.height}
             style={{ position: "absolute", left: 0, top: 0 }}
           >
-            <ProjectLines
-              project={{ ...project, content: safeContent }}
-              positions={positions}
-            />
+            <ProjectLines project={{ ...project, content: safeContent }} positions={positions} />
           </svg>
 
           {contentEmpty ? (
