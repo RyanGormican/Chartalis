@@ -1,12 +1,24 @@
 "use client";
 import { Project } from "./ProjectDrawer";
 
+type Link = {
+  id: string;
+  type: "Association" | "Aggregation" | "Composition" | string;
+  wholeEnd?: boolean;
+};
+
+type Component = {
+  attributes?: string[];
+  operations?: string[];
+  links?: Link[];
+};
+
 type Props = {
-  project: Project;
+  project: Project & { content: Record<string, Component> };
   positions: Record<string, { x: number; y: number }>;
 };
 
-function getNodeSize(comp: any) {
+function getNodeSize(comp: Component) {
   const lineHeight = 16;
   const sectionPadding = 8;
   const nameHeight = lineHeight + sectionPadding;
@@ -18,7 +30,14 @@ function getNodeSize(comp: any) {
 }
 
 // Compute the point where the line exits the box
-function getEdgePoint(boxX: number, boxY: number, boxWidth: number, boxHeight: number, targetX: number, targetY: number) {
+function getEdgePoint(
+  boxX: number,
+  boxY: number,
+  boxWidth: number,
+  boxHeight: number,
+  targetX: number,
+  targetY: number
+) {
   const cx = boxX + boxWidth / 2;
   const cy = boxY + boxHeight / 2;
   const dx = targetX - cx;
@@ -40,7 +59,7 @@ export default function ProjectLines({ project, positions }: Props) {
   const elements: JSX.Element[] = [];
 
   Object.entries(project.content || {}).forEach(([key, comp]) => {
-    (comp.links || []).forEach(link: any => {
+    comp.links?.forEach((link) => {
       const linkedId = link.id;
       const type = link.type;
       const wholeEnd = link.wholeEnd;
@@ -89,16 +108,16 @@ export default function ProjectLines({ project, positions }: Props) {
           { x: 0, y: -half },
           { x: half, y: 0 },
           { x: 0, y: half },
-          { x: -half, y: 0 }
+          { x: -half, y: 0 },
         ]
-          .map(p => `${centerX + p.x * cos - p.y * sin},${centerY + p.x * sin + p.y * cos}`)
+          .map((p) => `${centerX + p.x * cos - p.y * sin},${centerY + p.x * sin + p.y * cos}`)
           .join(" ");
 
         elements.push(
           <polygon
             key={`diamond-${key}-${linkedId}`}
             points={points}
-            fill={type === "Composition" ? "#000" : "#ffffff"}
+            fill={type === "Composition" ? "#000" : "#fff"}
             stroke="#000"
             strokeWidth={2}
           />
