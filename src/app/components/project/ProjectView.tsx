@@ -96,7 +96,7 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
         onClose={() => setSideMenuOpen(false)}
         project={currentProject}
         selectedComponentKey={selectedComponentKey}
-        setProject={setCurrentProject}
+        setProject={setCurrentProject as React.Dispatch<React.SetStateAction<Project>>}
         addNewComponent={addNewComponent}
         updateLocalStorage={updateLocalStorage}
       />
