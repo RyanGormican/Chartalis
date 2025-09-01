@@ -1,6 +1,18 @@
 "use client";
 import { Box, Typography, Divider } from "@mui/material";
-import { ComponentItem } from "./ProjectDrawer";
+
+// Define types for attributes and operations
+export type Attribute = string | { name: string; type: string };
+export type Operation = string | { name: string; type?: string };
+
+// ComponentItem type
+export type ComponentItem = {
+  id: string;
+  name: string;
+  color: string;
+  attributes?: Attribute[];
+  operations?: Operation[];
+};
 
 type Props = {
   comp: ComponentItem;

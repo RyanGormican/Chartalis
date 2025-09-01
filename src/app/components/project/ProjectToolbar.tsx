@@ -4,8 +4,15 @@ import { Stack, Button, Typography, IconButton, Select, MenuItem } from "@mui/ma
 import { Icon } from "@iconify/react";
 import * as htmlToImage from "html-to-image";
 import { useTranslate } from "../translate/TranslateContext";
-import { Project } from "./ProjectDrawer";
-import { ProjectCanvasHandle } from "./ProjectCanvas";
+import { ProjectCanvasHandle, ComponentItem } from "./ProjectCanvas";
+
+// Extend Project type to include typed content
+export type Project = {
+  id: string;
+  name: string;
+  owner: string;
+  content?: Record<string, ComponentItem>;
+};
 
 type Props = {
   project: Project;
@@ -46,7 +53,11 @@ export default function ProjectToolbar({
       const dataUrl = await htmlToImage.toPng(node, {
         width: worldSize.width,
         height: worldSize.height,
-        style: { width: `${worldSize.width}px`, height: `${worldSize.height}px`, transformOrigin: "0 0" }
+        style: {
+          width: `${worldSize.width}px`,
+          height: `${worldSize.height}px`,
+          transformOrigin: "0 0"
+        }
       });
       downloadPng(dataUrl);
     } finally {
@@ -81,10 +92,10 @@ export default function ProjectToolbar({
       </Button>
 
       <IconButton title={translate("export_full_project")} onClick={exportFullProject}>
-        <Icon icon="mdi:perimeter" width="24" height="24" />
+        <Icon icon="mdi:perimeter" width={24} height={24} />
       </IconButton>
       <IconButton title={translate("export_viewport")} onClick={exportViewport}>
-        <Icon icon="material-symbols:camera" width="24" height="24" />
+        <Icon icon="material-symbols:camera" width={24} height={24} />
       </IconButton>
 
       <Select
@@ -96,11 +107,12 @@ export default function ProjectToolbar({
         <MenuItem value="" disabled>
           {translate("go_to_component")}
         </MenuItem>
-        {Object.entries(project.content || {}).map(([key, comp]) => (
-          <MenuItem key={key} value={key}>
-            {comp.name}
-          </MenuItem>
-        ))}
+        {project.content &&
+          Object.entries(project.content).map(([key, comp]) => (
+            <MenuItem key={key} value={key}>
+              {comp.name}
+            </MenuItem>
+          ))}
       </Select>
     </Stack>
   );

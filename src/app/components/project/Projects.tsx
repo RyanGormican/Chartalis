@@ -17,11 +17,20 @@ import {
 import { Icon } from "@iconify/react";
 import ProjectView from "./ProjectView";
 
-type Project = {
+// Types
+export type ComponentItem = {
+  id: string;
+  name: string;
+  color: string;
+  attributes?: (string | { name: string; type: string })[];
+  operations?: (string | { name: string; type?: string })[];
+};
+
+export type Project = {
   id: string;
   name: string;
   owner: string;
-  content?: Record<string, any>;
+  content?: Record<string, ComponentItem>;
 };
 
 export default function Projects() {
@@ -32,22 +41,25 @@ export default function Projects() {
   const [mode, setMode] = useState<"view" | "manage">("view");
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
+  // Load projects from localStorage
   useEffect(() => {
     const diagramoData = localStorage.getItem("Diagramo");
     if (diagramoData) {
       try {
-        const parsed = JSON.parse(diagramoData);
+        const parsed = JSON.parse(diagramoData) as { projects: Project[] };
         setProjects(parsed.projects || []);
-      } catch {}
+      } catch {
+        setProjects([]);
+      }
     }
   }, []);
 
   const updateLocalStorage = (updatedProject: Project) => {
     const diagramoData = localStorage.getItem("Diagramo");
-    let parsed = { projects: [] as Project[] };
+    let parsed: { projects: Project[] } = { projects: [] };
     if (diagramoData) {
       try {
-        parsed = JSON.parse(diagramoData);
+        parsed = JSON.parse(diagramoData) as { projects: Project[] };
         if (!parsed.projects) parsed.projects = [];
       } catch {
         parsed.projects = [];
@@ -77,36 +89,66 @@ export default function Projects() {
     setDialogOpen(false);
   };
 
+  // Manage mode: open selected project
   if (mode === "manage" && selectedProjectId) {
     const project = projects.find((p) => p.id === selectedProjectId);
     if (!project) {
       setMode("view");
       setSelectedProjectId(null);
     } else {
-      return <ProjectView project={project} goBack={() => setMode("view")} updateLocalStorage={updateLocalStorage} />;
+      return (
+        <ProjectView
+          project={project}
+          goBack={() => setMode("view")}
+          updateLocalStorage={updateLocalStorage}
+        />
+      );
     }
   }
+
+  const contentEmpty = projects.length === 0;
 
   return (
     <>
       <Grid container spacing={2} sx={{ mt: 2 }}>
-         <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Grid item xs={12} sm={6} md={4} lg={3}>
           <Card
-            sx={{ minHeight: 200, minWidth: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", borderStyle: "dashed" }}
+            sx={{
+              minHeight: 200,
+              minWidth: 200,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              borderStyle: "dashed",
+            }}
             onClick={() => setDialogOpen(true)}
           >
             <CardContent>
-              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-                <Icon icon="mdi:folder-add" width="24" height="24" />
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Icon icon="mdi:folder-add" width={24} height={24} />
                 <Typography variant="h6">{translate("new_project")}</Typography>
               </Stack>
             </CardContent>
           </Card>
         </Grid>
+
         {projects.map((project) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={project.id}>
             <Card
-              sx={{ minHeight: 200, minWidth: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+              sx={{
+                minHeight: 200,
+                minWidth: 200,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
               onClick={() => {
                 setSelectedProjectId(project.id);
                 setMode("manage");
@@ -115,14 +157,11 @@ export default function Projects() {
               <CardContent>
                 <Typography variant="h6" align="center">
                   {project.name}
-            
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
         ))}
-
-     
       </Grid>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
@@ -137,8 +176,12 @@ export default function Projects() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>{translate("cancel")}</Button>
-          <Button onClick={saveNewProject} variant="contained">{translate("confirm")}</Button>
+          <Button onClick={() => setDialogOpen(false)}>
+            {translate("cancel")}
+          </Button>
+          <Button onClick={saveNewProject} variant="contained">
+            {translate("confirm")}
+          </Button>
         </DialogActions>
       </Dialog>
     </>

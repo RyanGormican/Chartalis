@@ -20,11 +20,10 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
     content: project.content || {}
   });
 
- const [selectedComponentKey, setSelectedComponentKey] = useState<string | null>(
-  project.content ? Object.keys(project.content)[0] || null : null
-);
+  const [selectedComponentKey, setSelectedComponentKey] = useState<string | null>(
+    project.content ? Object.keys(project.content)[0] || null : null
+  );
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
-
 
   const canvasHandleRef = useRef<ProjectCanvasHandle>(null);
 
@@ -55,7 +54,6 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
 
   return (
     <Box sx={{ height: "90vh", display: "flex", flexDirection: "column", p: 2 }}>
-
       <ProjectToolbar
         project={currentProject}
         goBack={goBack}
