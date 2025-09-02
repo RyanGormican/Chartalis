@@ -1,14 +1,11 @@
 "use client";
-import React from "react";
-import { Stack, Button, Typography, IconButton, Select, MenuItem } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Stack, Button, Typography, IconButton, Select, MenuItem, TextField } from "@mui/material";
 import { Icon } from "@iconify/react";
 import * as htmlToImage from "html-to-image";
 import { useTranslate } from "../translate/TranslateContext";
-import { Project, ComponentItem, ToolbarProps, ProjectCanvasHandle } from "./types";
-
-
-
-
+import { Project, ToolbarProps } from "./types";
+import GitHubImport from "./GithubImport";
 
 export default function ProjectToolbar({
   project,
@@ -17,9 +14,17 @@ export default function ProjectToolbar({
   setSelectedComponentKey,
   addNewComponent,
   canvasRef,
-  worldSize
-}: ToolbarProps) {
+  worldSize,
+  updateLocalStorage
+}: ToolbarProps & { updateLocalStorage: (updated: Project) => void }) {
   const { translate } = useTranslate();
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [Name, setName] = useState(project.name);
+
+  useEffect(() => {
+    setName(project.name);
+  }, [project.name]);
 
   const downloadPng = (dataUrl: string) => {
     const link = document.createElement("a");
@@ -56,43 +61,79 @@ export default function ProjectToolbar({
     }
   };
 
+  const saveName = () => {
+    const trimmed = Name.trim();
+    if (!trimmed) {
+      setName(project.name);
+      setIsEditingName(false);
+      return;
+    }
+
+    if (trimmed !== project.name) {
+      const updatedProject = { ...project, name: trimmed };
+      updateLocalStorage(updatedProject); 
+    }
+    setIsEditingName(false);
+  };
+
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <Button variant="contained" onClick={goBack}>
-        {translate("back")}
-      </Button>
+    <>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Button variant="contained" onClick={goBack}>{translate("back")}</Button>
 
-      <Typography variant="h5" sx={{ flex: 1 }}>
-        {project.name}
-      </Typography>
+        {isEditingName ? (
+          <TextField
+            value={Name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={saveName}
+            onKeyDown={(e) => e.key === "Enter" && saveName()}
+            size="small"
+            sx={{ flex: 1 }}
+            autoFocus
+          />
+        ) : (
+          <Typography
+            variant="h5"
+            sx={{ flex: 1, cursor: "pointer" }}
+            onClick={() => setIsEditingName(true)}
+          >
+            {Name}
+          </Typography>
+        )}
 
-      <Button variant="contained" onClick={addNewComponent}>
-        {translate("new_component")}
-      </Button>
+        <Button variant="contained" onClick={addNewComponent}>{translate("new_component")}</Button>
 
-      <IconButton title={translate("export_full_project")} onClick={exportFullProject}>
-        <Icon icon="mdi:perimeter" width={24} height={24} />
-      </IconButton>
-      <IconButton title={translate("export_viewport")} onClick={exportViewport}>
-        <Icon icon="material-symbols:camera" width={24} height={24} />
-      </IconButton>
+        <IconButton style={{display:"none"}} title={translate("import_from_github")} onClick={() => setImportDialogOpen(true)}>
+          <Icon icon="mdi:github" width={28} height={28} />
+        </IconButton>
 
-      <Select
-        size="small"
-        displayEmpty
-        value={selectedComponentKey || ""}
-        onChange={e => setSelectedComponentKey(e.target.value)}
-      >
-        <MenuItem value="" disabled>
-          {translate("go_to_component")}
-        </MenuItem>
-        {project.content &&
-          Object.entries(project.content).map(([key, comp]) => (
-            <MenuItem key={key} value={key}>
-              {comp.name}
-            </MenuItem>
-          ))}
-      </Select>
-    </Stack>
+        <IconButton title={translate("export_full_project")} onClick={exportFullProject}>
+          <Icon icon="mdi:perimeter" width={24} height={24} />
+        </IconButton>
+        <IconButton title={translate("export_viewport")} onClick={exportViewport}>
+          <Icon icon="material-symbols:camera" width={24} height={24} />
+        </IconButton>
+
+        <Select
+          size="small"
+          displayEmpty
+          value={selectedComponentKey || ""}
+          onChange={e => setSelectedComponentKey(e.target.value)}
+        >
+          <MenuItem value="" disabled>{translate("go_to_component")}</MenuItem>
+          {project.content &&
+            Object.entries(project.content).map(([key, comp]) => (
+              <MenuItem key={key} value={key}>{comp.name}</MenuItem>
+            ))}
+        </Select>
+      </Stack>
+
+      <GitHubImport
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        project={project}
+        updateLocalStorage={updateLocalStorage}
+      />
+    </>
   );
 }

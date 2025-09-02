@@ -8,7 +8,7 @@ type Translations = typeof en;
 type TranslationContextType = {
   language: string;
   setLanguage: (lang: string) => void;
-  translate: (key: keyof Translations) => string;
+  translate: (key: string) => string;
   availableLanguages: string[];
 };
 
@@ -20,7 +20,8 @@ export const TranslateContext = createContext<TranslationContextType | undefined
 export const TranslateProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageCode] = useState("en");
 
-  const translate = (key: keyof Translations) => localeMap[language][key] || key;
+const translate = (key: string) => localeMap[language][key as keyof Translations] || key;
+
 
   const availableLanguages = Object.keys(languageMap);
 

@@ -14,7 +14,7 @@ export type Operation = {
 
 export type Link = {
   id: string;
-  type?: string;
+  type: string;
   wholeEnd?: any;
 };
 
@@ -86,3 +86,9 @@ export interface ProjectCanvasHandle {
   canvasRef: HTMLDivElement | null;
   worldSize: { width: number; height: number };
 }
+export type GithubImportProps = {
+  open: boolean;
+  onClose: () => void;
+  project: Project;
+  updateLocalStorage: (updated: Project) => void;
+};

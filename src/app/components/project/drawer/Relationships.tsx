@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Accordion,
@@ -27,7 +29,15 @@ type Props = {
   translate: (key: string) => string;
 };
 
-const relationTypes = ["Association", "Aggregation", "Composition"];
+// All supported UML relationship types
+const relationTypes = [
+  "Association",
+  "Aggregation",
+  "Composition",
+  "Dependency",
+  "Inheritance",
+  "Realization"
+];
 
 export default function ComponentRelationships({
   component,
@@ -41,69 +51,84 @@ export default function ComponentRelationships({
   const [selectedRelationType, setSelectedRelationType] = useState<string>(relationTypes[0]);
   const [wholeEndAtSelected, setWholeEndAtSelected] = useState<boolean>(true);
 
+  // Components that are eligible for a new relationship
   const availableRelations = Object.entries(project.content || {}).filter(
-    ([k, comp]) =>
+    ([k]) =>
       k !== selectedComponentKey &&
       !((component.links || []).map((l) => l.id).includes(k))
   );
 
+  // Save updated project state and persist to local storage
   const saveProject = (updatedContent: Project["content"]) => {
     const updatedProject = { ...project, content: updatedContent };
     setProject(updatedProject);
     updateLocalStorage(updatedProject);
   };
 
+  /**
+   * Add a new relationship between the selected component and another component.
+   * Creates reciprocal link for the linked component according to UML rules.
+   */
   const addRelationship = () => {
     if (!selectedRelation) return;
-    const updatedContent = { ...project.content } as Record<string, ComponentItem>;
 
+    const updatedContent = { ...project.content } as Record<string, ComponentItem>;
     updatedContent[selectedComponentKey].links = updatedContent[selectedComponentKey].links || [];
     updatedContent[selectedRelation].links = updatedContent[selectedRelation].links || [];
 
+    // Relationship from the selected component to the linked component
     const linkData: Link = {
       id: selectedRelation,
       type: selectedRelationType,
-      wholeEnd: wholeEndAtSelected
+      wholeEnd: selectedRelationType === "Association" ? wholeEndAtSelected : true
     };
 
+    // Reciprocal relationship from linked component
     const reciprocalLinkData: Link = {
       id: selectedComponentKey,
       type: selectedRelationType,
-      wholeEnd: !wholeEndAtSelected
+      wholeEnd: selectedRelationType === "Association" ? false : false // always mirror the rule for non-Association
     };
 
+    // Add if it does not exist
     if (!updatedContent[selectedComponentKey].links.some((l) => l.id === selectedRelation)) {
       updatedContent[selectedComponentKey].links.push(linkData);
     }
-
     if (!updatedContent[selectedRelation].links.some((l) => l.id === selectedComponentKey)) {
       updatedContent[selectedRelation].links.push(reciprocalLinkData);
     }
 
     saveProject(updatedContent);
 
+    // Reset creation fields
     setSelectedRelation("");
     setSelectedRelationType(relationTypes[0]);
     setWholeEndAtSelected(true);
   };
 
+  /**
+   * Remove a relationship from both sides
+   */
   const removeRelationship = (linkId: string) => {
     const updatedContent = { ...project.content } as Record<string, ComponentItem>;
-
     updatedContent[selectedComponentKey].links = updatedContent[selectedComponentKey].links?.filter(
       (l) => l.id !== linkId
     );
-
     updatedContent[linkId].links = updatedContent[linkId].links?.filter(
       (l) => l.id !== selectedComponentKey
     );
-
     saveProject(updatedContent);
   };
 
+  /**
+   * Update a relationship and ensure both sides are mirrored correctly.
+   * Association: only update the `wholeEnd` on the selected component.
+   * Other types: mirror type and set `wholeEnd` true/false on each side.
+   */
   const updateRelationship = (linkId: string, updatedLink: { type: string; wholeEnd: boolean }) => {
     const updatedContent = { ...project.content } as Record<string, ComponentItem>;
 
+    // Update selected component link
     const links = updatedContent[selectedComponentKey].links || [];
     const linkIndex = links.findIndex((l) => l.id === linkId);
     if (linkIndex !== -1) {
@@ -111,13 +136,20 @@ export default function ComponentRelationships({
       updatedContent[selectedComponentKey].links = links;
     }
 
+    // Update reciprocal link
     const reciprocalLinks = updatedContent[linkId].links || [];
     const reciprocalIndex = reciprocalLinks.findIndex((l) => l.id === selectedComponentKey);
+
     if (reciprocalIndex !== -1) {
+      // Associations: only one side controls wholeEnd
+      // All others: type is mirrored, wholeEnd flips automatically
       reciprocalLinks[reciprocalIndex] = {
         id: selectedComponentKey,
         type: updatedLink.type,
-        wholeEnd: !updatedLink.wholeEnd
+        wholeEnd:
+          updatedLink.type === "Association"
+            ? reciprocalLinks[reciprocalIndex].wholeEnd // do not change
+            : !updatedLink.wholeEnd
       };
       updatedContent[linkId].links = reciprocalLinks;
     }
@@ -133,6 +165,7 @@ export default function ComponentRelationships({
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
+        {/* Add new relationship section */}
         {availableRelations.length > 0 && (
           <Stack spacing={1} sx={{ mb: 2 }}>
             <FormControl fullWidth>
@@ -161,6 +194,7 @@ export default function ComponentRelationships({
               </Select>
             </FormControl>
 
+            {/* Only Aggregation & Composition require wholeEnd toggle */}
             {(selectedRelationType === "Aggregation" || selectedRelationType === "Composition") && (
               <FormControlLabel
                 control={
@@ -184,6 +218,7 @@ export default function ComponentRelationships({
           </Stack>
         )}
 
+        {/* Edit/remove existing relationships */}
         <Stack spacing={1}>
           {(component.links || []).map(({ id, type, wholeEnd }) => (
             <Box
@@ -204,17 +239,15 @@ export default function ComponentRelationships({
                   </Select>
                 </FormControl>
 
-                {(type === "Aggregation" || type === "Composition") && (
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={wholeEnd}
-                        onChange={(e) => updateRelationship(id, { type, wholeEnd: e.target.checked })}
-                      />
-                    }
-                    label=""
-                  />
-                )}
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={wholeEnd}
+                      onChange={(e) => updateRelationship(id, { type, wholeEnd: e.target.checked })}
+                    />
+                  }
+                  label=""
+                />
               </Box>
 
               <IconButton size="small" onClick={() => removeRelationship(id)}>

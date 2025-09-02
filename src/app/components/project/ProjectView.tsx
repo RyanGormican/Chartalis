@@ -5,7 +5,7 @@ import { useTranslate } from "../translate/TranslateContext";
 import ProjectDrawer from "./drawer/ProjectDrawer";
 import ProjectToolbar from "./ProjectToolbar";
 import ProjectCanvas from "./ProjectCanvas";
-import { Project, ProjectDrawerProps, ComponentItem, Field, Link, Operation, ProjectCanvasHandle } from "./types";
+import { Project, ComponentItem, ProjectCanvasHandle } from "./types";
 
 type ProjectViewProps = {
   project: Project;
@@ -26,7 +26,6 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
   );
 
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
-
   const canvasHandleRef = useRef<ProjectCanvasHandle>(null);
 
   const addNewComponent = (linkTo?: string) => {
@@ -39,14 +38,13 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
       color: "#ffffff"
     };
 
-    const updatedContent: Record<string, ComponentItem> = {
-      ...currentProject.content!,
-      [key]: newComponent
+    const updatedProject: Project = {
+      ...currentProject,
+      content: { ...currentProject.content!, [key]: newComponent }
     };
 
-    const updatedProject: Project = { ...currentProject, content: updatedContent };
     setCurrentProject(updatedProject);
-    updateLocalStorage(updatedProject);
+    updateLocalStorage(updatedProject); 
   };
 
   const openRenameMenu = (key: string) => {
@@ -64,6 +62,7 @@ export default function ProjectView({ project, goBack, updateLocalStorage }: Pro
         addNewComponent={addNewComponent}
         canvasRef={canvasHandleRef}
         worldSize={canvasHandleRef.current?.worldSize || { width: 0, height: 0 }}
+        updateLocalStorage={updateLocalStorage}
       />
 
       <ProjectCanvas

@@ -7,21 +7,14 @@ import SettingsModal from "./components/SettingsModal";
 import Feedback from "./components/feedback/Feedback";
 import { useTranslate } from "./components/translate/TranslateContext";
 import Projects from "./components/project/Projects";
+import Glossary from "./components/glossary/Glossary";
 import { Button, Stack, Box } from "@mui/material";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [mode, setMode] = useState<"Projects">("Projects");
+  const [mode, setMode] = useState<"Projects" | "Glossary">("Projects");
   const { translate } = useTranslate();
-
-  const renderContent = () => {
-    switch (mode) {
-      case "Projects":
-      default:
-        return <Projects />;
-    }
-  };
 
   return (
     <div className={styles.dashboard}>
@@ -29,12 +22,22 @@ export default function Home() {
         <Stack direction="column" sx={{ height: "100%", justifyContent: "space-between", p: 2 }}>
           <Box>
             <h1 style={{ marginBottom: "1.5rem" }}>Diagramo</h1>
+
             <Button
               variant={mode === "Projects" ? "contained" : "outlined"}
               onClick={() => setMode("Projects")}
               fullWidth
+              sx={{ mb: 1 }}
             >
               {translate("projects" as any)}
+            </Button>
+
+            <Button
+              variant={mode === "Glossary" ? "contained" : "outlined"}
+              onClick={() => setMode("Glossary")}
+              fullWidth
+            >
+              {translate("glossary" as any)}
             </Button>
           </Box>
 
@@ -68,7 +71,14 @@ export default function Home() {
       </aside>
 
       <main className={styles.main}>
-        {renderContent()}
+    
+        <div style={{ display: mode === "Projects" ? "block" : "none" }}>
+          <Projects />
+        </div>
+
+        <div style={{ display: mode === "Glossary" ? "block" : "none" }}>
+          <Glossary />
+        </div>
       </main>
 
       <SettingsModal open={modalOpen} onClose={() => setModalOpen(false)} />

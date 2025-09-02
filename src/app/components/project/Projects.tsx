@@ -99,8 +99,8 @@ export default function Projects() {
         <Grid>
           <Card
             sx={{
-              minHeight: 200,
-              minWidth: 200,
+              minHeight: '20vh',
+              minWidth: '20vw',
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -121,8 +121,8 @@ export default function Projects() {
           <Grid key={project.id} >
             <Card
               sx={{
-                minHeight: 200,
-                minWidth: 200,
+                minHeight: '20vh',
+                minWidth: '20vw',
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
