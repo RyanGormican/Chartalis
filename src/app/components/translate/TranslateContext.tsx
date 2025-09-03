@@ -2,26 +2,36 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import en from "./english";
 import fr from "./french";
+import es from "./spanish";
 
 type Translations = typeof en;
 
 type TranslationContextType = {
   language: string;
-  setLanguage: (lang: string) => void;
-  translate: (key: string) => string;
+  setLanguage: (langName: string) => void;
+    translate: (key: string) => string;
   availableLanguages: string[];
 };
 
-const languageMap: Record<string, string> = { English: "en", French: "fr" };
-const localeMap: Record<string, Translations> = { en, fr };
+
+
+export const languageMap: Record<string, string> = {
+  English: "en",
+  French: "fr",
+  Spanish: "es",
+};
+
+const localeMap: Record<string, Translations> = { en, fr, es };
 
 export const TranslateContext = createContext<TranslationContextType | undefined>(undefined);
 
 export const TranslateProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageCode] = useState("en");
+  const [language, setLanguageCode] = useState<string>("en");
 
-const translate = (key: string) => localeMap[language][key as keyof Translations] || key;
+   const translate = (key: string) => {
 
+    return (localeMap[language][key as keyof Translations] as string) || key;
+  };
 
   const availableLanguages = Object.keys(languageMap);
 
@@ -31,7 +41,9 @@ const translate = (key: string) => localeMap[language][key as keyof Translations
   };
 
   return (
-    <TranslateContext.Provider value={{ language, setLanguage, translate, availableLanguages }}>
+    <TranslateContext.Provider
+      value={{ language, setLanguage, translate, availableLanguages }}
+    >
       {children}
     </TranslateContext.Provider>
   );
