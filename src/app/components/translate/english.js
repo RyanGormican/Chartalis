@@ -1,7 +1,7 @@
 // en.js
 const en = {
-  Projects: "Projects",
-  Settings: "Settings",
+  projects: "Projects",
+  settings: "Settings",
   Language: "Language",
   new_project: "New Project",
   project_name: "Project Name",
@@ -64,8 +64,12 @@ dependency_description: "A class uses or depends on another for a feature, but o
 dependency_example: "Example: A Report Generator depends on a Database during execution.",
 realization: "Realization",
 realization_description: "A relationship where a concrete class implements the interface or contract defined by another.",
-realization_example: "Example: A Car class realizes the Vehicle interface."
-
+realization_example: "Example: A Car class realizes the Vehicle interface.",
+settings: "Settings",
+feedback: "Feedback",
+search_projects: "Search Projects",
+sort_by: "Sort By",
+last_edited: "Last Edited",
 };
 
 export default en;

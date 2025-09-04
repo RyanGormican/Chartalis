@@ -33,6 +33,7 @@ export type Project = {
   name: string;
   owner: string;
   content?: Record<string, ComponentItem>;
+  lastEdited?: string;
 };
 
 export type ProjectDrawerProps = {

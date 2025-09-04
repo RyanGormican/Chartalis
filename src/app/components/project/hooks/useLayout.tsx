@@ -5,6 +5,7 @@ const REPULSION_SCALE = 6;
 const ATTRACTION_SCALE = 0.1;
 const BASE_EDGE_LENGTH = 300;
 const MAX_ITERATIONS = 500;
+const PADDING = 20;
 
 function getNodeSize(comp: ComponentItem) {
   const lineHeight = 16;
@@ -47,6 +48,7 @@ export function useLayout(project: Project) {
     placed.add(startNode);
     queue.push(startNode);
 
+    // BFS placement
     while (queue.length > 0) {
       const currentKey = queue.shift()!;
       const currentComp = project.content![currentKey];
@@ -57,20 +59,29 @@ export function useLayout(project: Project) {
       const n = linkedKeys.length;
       linkedKeys.forEach((k, i) => {
         const angle = (i / n) * Math.PI * 2;
-        const distance = BASE_EDGE_LENGTH + (i % 2) * 40;
+        const distance =
+          BASE_EDGE_LENGTH +
+          (Math.max(sizes[k].width, sizes[k].height) +
+            Math.max(sizes[currentKey].width, sizes[currentKey].height)) /
+            2 +
+          PADDING;
+
         pos[k] = {
           x: pos[currentKey].x + Math.cos(angle) * distance,
           y: pos[currentKey].y + Math.sin(angle) * distance,
         };
+
         placed.add(k);
         queue.push(k);
       });
     }
 
+    // Force-directed iterations
     for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
       let moved = false;
+      const cooling = 1 - iter / MAX_ITERATIONS;
 
-      // Repulsion between all pairs
+      // Repulsion
       keys.forEach((k1) => {
         keys.forEach((k2) => {
           if (k1 >= k2) return;
@@ -80,13 +91,21 @@ export function useLayout(project: Project) {
           const b2 = { ...pos[k2], w: sizes[k2].width, h: sizes[k2].height };
 
           if (rectsOverlap(b1, b2)) {
-            const dx = (b1.x + b1.w / 2) - (b2.x + b2.w / 2);
-            const dy = (b1.y + b1.h / 2) - (b2.y + b2.h / 2);
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            let dx = (b1.x + b1.w / 2) - (b2.x + b2.w / 2);
+            let dy = (b1.y + b1.h / 2) - (b2.y + b2.h / 2);
+            let dist = Math.sqrt(dx * dx + dy * dy);
+
+            // Add small random nudge if exactly overlapping
+            if (dist < 1) {
+              dx = Math.random() - 0.5;
+              dy = Math.random() - 0.5;
+              dist = Math.sqrt(dx * dx + dy * dy);
+            }
+
             const overlapX = Math.max(0, (b1.w + b2.w) / 2 - Math.abs(dx));
             const overlapY = Math.max(0, (b1.h + b2.h) / 2 - Math.abs(dy));
-            const pushX = (dx / dist) * overlapX * REPULSION_SCALE;
-            const pushY = (dy / dist) * overlapY * REPULSION_SCALE;
+            const pushX = (dx / dist) * overlapX * REPULSION_SCALE * cooling;
+            const pushY = (dy / dist) * overlapY * REPULSION_SCALE * cooling;
 
             pos[k1].x += pushX;
             pos[k1].y += pushY;
@@ -97,7 +116,7 @@ export function useLayout(project: Project) {
         });
       });
 
-      // Attraction along links
+      // Attraction
       keys.forEach((k1) => {
         const comp = project.content![k1];
         (comp.links || []).forEach(({ id }) => {
@@ -107,7 +126,8 @@ export function useLayout(project: Project) {
           const dx = pos[k2].x - pos[k1].x;
           const dy = pos[k2].y - pos[k1].y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const attraction = (dist - BASE_EDGE_LENGTH) * ATTRACTION_SCALE;
+          const attraction = (dist - BASE_EDGE_LENGTH) * ATTRACTION_SCALE * cooling;
+
           pos[k1].x += (dx / dist) * attraction;
           pos[k1].y += (dy / dist) * attraction;
           pos[k2].x -= (dx / dist) * attraction;
@@ -119,6 +139,7 @@ export function useLayout(project: Project) {
       if (!moved) break;
     }
 
+    // Normalize positions
     let minX = Infinity,
       minY = Infinity,
       maxX = -Infinity,

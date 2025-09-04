@@ -1,7 +1,6 @@
-// es.js
 const es = {
-  Projects: "Proyectos",
-  Settings: "Configuraci\u00F3n",
+  projects: "Proyectos",
+  settings: "Configuraci\u00F3n",
   Language: "Idioma",
   new_project: "Nuevo proyecto",
   project_name: "Nombre del proyecto",
@@ -64,7 +63,10 @@ const es = {
   dependency_example: "Ejemplo: Un Generador de Informes depende de una Base de Datos en tiempo de ejecuci\u00F3n.",
   realization: "Realizaci\u00F3n",
   realization_description: "Una relaci\u00F3n donde una clase concreta implementa la interfaz o contrato definido por otra.",
-  realization_example: "Ejemplo: Una Clase Coche realiza la interfaz Veh\u00EDculo."
+  realization_example: "Ejemplo: Una Clase Coche realiza la interfaz Veh\u00EDculo.",
+  search_projects: "Buscar proyectos",
+  sort_by: "Ordenar por",
+  last_edited: "Ultima modificaci\u00F3n"
 };
 
 export default es;

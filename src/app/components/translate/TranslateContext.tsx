@@ -3,7 +3,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 import en from "./english";
 import fr from "./french";
 import es from "./spanish";
-
+import de from "./german";
 type Translations = typeof en;
 
 type TranslationContextType = {
@@ -19,9 +19,10 @@ export const languageMap: Record<string, string> = {
   English: "en",
   French: "fr",
   Spanish: "es",
+  German: "de",
 };
 
-const localeMap: Record<string, Translations> = { en, fr, es };
+const localeMap: Record<string, Translations> = { en, fr, es, de };
 
 export const TranslateContext = createContext<TranslationContextType | undefined>(undefined);
 
